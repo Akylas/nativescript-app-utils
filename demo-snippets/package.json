@@ -1,0 +1,16 @@
+{
+    "name": "@akylas/template-snippet",
+    "private": true,
+    "version": "0.0.1",
+    "dependencies": {
+        "@akylas/nativescript-app-utils": "*",
+        "vue-class-component": "^7.2.6",
+        "vue-property-decorator": "^8.5.1"
+    },
+    "nativescript": {
+        "platforms": {
+            "android": "2.3.0",
+            "ios": "2.3.0"
+        }
+    }
+}

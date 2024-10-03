@@ -1,0 +1,15 @@
+{
+    "extends": "./tools/tsconfig",
+    "compilerOptions": {
+        "paths": {
+            "@akylas/nativescript-app-utils": ["src/app-utils/index"],
+            "@akylas/nativescript-app-utils/*": ["src/app-utils/*"]
+        }
+    },
+    "references": [
+        {
+            //Need for IDE
+            "path": "./tsconfig.vue3.json"
+        }
+    ]
+}

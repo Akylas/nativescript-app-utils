@@ -1,0 +1,9 @@
+{
+    "uses": [
+        "com.nativescript.apputils:WorkersContext",
+        "com.nativescript.apputils:WorkersContext.Companion",
+        "com.nativescript.apputils:Utils",
+        "com.nativescript.apputils:Utils.WindowInsetsCallback",
+        "com.nativescript.apputils:Utils.Companion"
+    ]
+}

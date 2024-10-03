@@ -20,6 +20,9 @@
             "ios": "5.0.0"
         }
     },
+    "publishConfig": {
+        "access": "public"
+    },
     "repository": {
         "type": "git",
         "url": "https://github.com/akylas/nativescript-app-utils"

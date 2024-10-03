@@ -1,5 +1,5 @@
 {
-    "name": "@akylas/template-snippet",
+    "name": "@nativescript-community/template-snippet",
     "private": true,
     "version": "0.0.1",
     "dependencies": {

@@ -1,9 +1,9 @@
 import { Application, Utils } from '@nativescript/core';
 
 const NWorkerContext = com.nativescript.apputils.WorkersContext.Companion;
+const NUtils = com.nativescript.apputils.Utils;
+const UtilsCompanion = NUtils.Companion;
 export namespace AppUtilsAndroid {
-    const NUtils = com.nativescript.apputils.Utils;
-    const UtilsCompanion = NUtils.Companion;
     export function listenForWindowInsets(onWindowInsetsChange: (result: [number, number, number, number, number]) => void) {
         const rootView = Application.getRootView();
         if (rootView) {
@@ -27,9 +27,6 @@ export namespace AppUtilsAndroid {
     export function getColorFromName(context: android.content.Context, name: string) {
         return UtilsCompanion.getColorFromName(context, name);
     }
-    export function restartApp() {
-        return UtilsCompanion.restartApp(Utils.android.getApplicationContext(), Application.android.startActivity);
-    }
     export function prepareActivity(activity: androidx.appcompat.app.AppCompatActivity) {
         return UtilsCompanion.prepareActivity(activity);
     }
@@ -41,6 +38,9 @@ export namespace AppUtilsAndroid {
     }
 }
 
+export function restartApp() {
+    return UtilsCompanion.restartApp(Utils.android.getApplicationContext(), Application.android.startActivity);
+}
 export function setWorkerContextValue(key, value) {
     NWorkerContext.setValue(key, value);
 }

@@ -1,4 +1,24 @@
-import { Application, Utils } from '@nativescript/core';
+import { Application, ImageSource, Utils } from '@nativescript/core';
+
+function functionCallbackPromise<T>(onCallback: (calback: com.nativescript.apputils.FunctionCallback) => void, transformer = (v) => v, errorHandler = (e) => e) {
+    return new Promise<T>((resolve, reject) => {
+        const callback = new com.nativescript.apputils.FunctionCallback({
+            onResult(e, result) {
+                if (e) {
+                    reject(errorHandler(e));
+                } else {
+                    try {
+                        resolve(transformer(result));
+                    } catch (error) {
+                        reject(error);
+                    } finally {
+                    }
+                }
+            }
+        });
+        onCallback(callback);
+    });
+}
 
 const NWorkerContext = com.nativescript.apputils.WorkersContext.Companion;
 const NUtils = com.nativescript.apputils.Utils;
@@ -50,4 +70,18 @@ export function getWorkerContextValue(key) {
 export function getISO3Language(lang) {
     const locale = java.util.Locale.forLanguageTag(lang);
     return locale.getISO3Language();
+}
+
+export function loadImageSync(imagePath, loadOptions: { width?; height?; resizeThreshold?; sourceWidth?; sourceHeight?; jpegQuality? } = {}) {
+    loadOptions.resizeThreshold ??= 4500;
+    return new ImageSource(com.nativescript.apputils.ImageUtils.Companion.readBitmapFromFileSync(Utils.android.getApplicationContext(), imagePath, JSON.stringify(loadOptions)));
+}
+export function loadImage(imagePath, loadOptions: { width?; height?; resizeThreshold?; sourceWidth?; sourceHeight?; jpegQuality? } = {}) {
+    loadOptions.resizeThreshold ??= 4500;
+    return functionCallbackPromise<any[]>(
+        (callback) => {
+            com.nativescript.apputils.ImageUtils.Companion.readBitmapFromFile(Utils.android.getApplicationContext(), imagePath, callback, JSON.stringify(loadOptions));
+        },
+        (e) => new ImageSource(e)
+    );
 }

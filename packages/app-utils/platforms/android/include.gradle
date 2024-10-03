@@ -3,10 +3,13 @@ dependencies {
     def androidxVersion =  project.hasProperty("androidxVersion") ? project.androidxVersion : "1.2.0"
     def androidXAppCompat =  project.hasProperty("androidXAppCompat") ? project.androidXAppCompat : "1.1.0"
 	def androidXMaterial =  project.hasProperty("androidXMaterial") ? project.androidXMaterial : "1.8.0"
+	def androidXExifInterface =  project.hasProperty("androidXExifInterface") ? project.androidXExifInterface : "1.3.7"
     
 	implementation "com.google.android.material:material:$androidXMaterial"
 	implementation "androidx.appcompat:appcompat:$androidXAppCompat"
     implementation "androidx.core:core-splashscreen:$androidXSplashscreenVersion"
 	implementation "androidx.core:core:$androidxVersion"
+    implementation "androidx.exifinterface:exifinterface:$androidXExifInterface"
+
 
 }

@@ -65,8 +65,11 @@ class Utils {
         val systemLocale: Locale?
             get() = ConfigurationCompat.getLocales(Resources.getSystem().configuration)[0]
 
-        fun prepareActivity(activity: AppCompatActivity) {
-            DynamicColors.applyToActivityIfAvailable(activity)
+        @JvmOverloads
+        fun prepareActivity(activity: AppCompatActivity, applyDynamicColors: Boolean = true) {
+            if (applyDynamicColors) {
+                DynamicColors.applyToActivityIfAvailable(activity)
+            }
             activity.installSplashScreen()
             prepareWindow(activity.window)
         }

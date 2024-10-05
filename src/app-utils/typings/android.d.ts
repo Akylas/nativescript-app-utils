@@ -19,7 +19,7 @@ declare namespace com {
                     public onWindowInsetsChange(result: number[]): void;
                 }
                 export class Companion {
-                    static prepareActivity(arg0: androidx.appcompat.app.AppCompatActivity);
+                    static prepareActivity(arg0: androidx.appcompat.app.AppCompatActivity, applyDynamicColors?: boolean);
                     static prepareWindow(arg0: android.view.Window);
                     static applyDayNight(context: android.content.Context, applyDynamicColors: boolean);
                     static applyDynamicColors(context: android.content.Context);

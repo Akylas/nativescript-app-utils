@@ -10,6 +10,4 @@ dependencies {
     implementation "androidx.core:core-splashscreen:$androidXSplashscreenVersion"
 	implementation "androidx.core:core:$androidxVersion"
     implementation "androidx.exifinterface:exifinterface:$androidXExifInterface"
-
-
 }

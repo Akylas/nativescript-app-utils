@@ -47,8 +47,8 @@ export namespace AppUtilsAndroid {
     export function getColorFromName(context: android.content.Context, name: string) {
         return UtilsCompanion.getColorFromName(context, name);
     }
-    export function prepareActivity(activity: androidx.appcompat.app.AppCompatActivity) {
-        return UtilsCompanion.prepareActivity(activity);
+    export function prepareActivity(activity: androidx.appcompat.app.AppCompatActivity, applyDynamicColors: boolean = true) {
+        return UtilsCompanion.prepareActivity(activity, applyDynamicColors);
     }
     export function applyDayNight(activity: androidx.appcompat.app.AppCompatActivity, applyDynamicColors: boolean) {
         return UtilsCompanion.applyDayNight(activity, applyDynamicColors);

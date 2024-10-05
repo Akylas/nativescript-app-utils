@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [2.1.1](https://github.com/akylas/nativescript-app-utils/compare/v2.1.0...v2.1.1) (2024-10-05)
+
+### Bug Fixes
+
+* **android:** allow to prepare activity without enabling dynamic colors ([103a466](https://github.com/akylas/nativescript-app-utils/commit/103a4669487767b0674dc06a3d1a991717300b5c))
+
 ## [2.1.0](https://github.com/akylas/nativescript-app-utils/compare/v2.0.0...v2.1.0) (2024-10-03)
 
 **Note:** Version bump only for package app-utils

@@ -213,10 +213,16 @@ class ImageUtils : NSObject {
     let options = toJSON(stringOptions)
     return readImageFromFileSync(src, options: options)
   }
-  static func readImageFromFile(_ src: String, _ delegate: CompletionDelegate?, _ stringOptions: String?) -> UIImage? {
+  static func readImageFromFile(_ src: String, _ delegate: NCompletionDelegate?, _ stringOptions: String?) {
      DispatchQueue.global(qos: .userInitiated).async {
       let options = toJSON(stringOptions)
-      delegate?.onComplete(readImageFromFileSync(src, stringOptions) as NSObject, error: _error as NSError?)
+//       do {
+         delegate?.onComplete(readImageFromFileSync(src, stringOptions) as NSObject?, error: nil)
+
+//       } catch {
+//         delegate?.onComplete(readImageFromFileSync(src, stringOptions) as NSObject?, error: error as NSError?)
+//
+//       }
      }
   }
 }

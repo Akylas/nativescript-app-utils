@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [2.1.3](https://github.com/akylas/nativescript-app-utils/compare/v2.1.2...v2.1.3) (2024-10-19)
+
+### Bug Fixes
+
+* **ios:** resource bundling fix ([0322cae](https://github.com/akylas/nativescript-app-utils/commit/0322cae6f40cf880e59bd1a2fbdd44f51272bfe6))
+
 ## [2.1.2](https://github.com/akylas/nativescript-app-utils/compare/v2.1.1...v2.1.2) (2024-10-07)
 
 ### Bug Fixes

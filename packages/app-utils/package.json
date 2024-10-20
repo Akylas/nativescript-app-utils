@@ -6,7 +6,7 @@
     "sideEffects": false,
     "typings": "index.d.ts",
     "scripts": {
-        "tsc": "cpy ../../src/app-utils/index.d.ts ./ && tsc -d",
+        "tsc": "cpy '**/*.d.ts' '../../packages/app-utils' --parents --cwd=../../src/app-utils && tsc -d",
         "build": "npm run tsc",
         "build.watch": "npm run tsc -- -w",
         "build.win": "npm run tsc-win",

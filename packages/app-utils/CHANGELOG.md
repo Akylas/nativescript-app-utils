@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [2.1.4](https://github.com/akylas/nativescript-app-utils/compare/v2.1.3...v2.1.4) (2024-10-20)
+
+### Bug Fixes
+
+* package native typings ([06c5e36](https://github.com/akylas/nativescript-app-utils/commit/06c5e36aec45381597981a99203605f6cc0439d3))
+
 ## [2.1.3](https://github.com/akylas/nativescript-app-utils/compare/v2.1.2...v2.1.3) (2024-10-19)
 
 ### Bug Fixes

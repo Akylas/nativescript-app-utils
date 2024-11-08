@@ -1,419 +1,231 @@
-package com.nativescript.apputils
+import Foundation
+import UIKit
 
-import android.content.ContentResolver
-import android.content.Context
-import android.graphics.Bitmap
-import android.graphics.BitmapFactory
-import android.graphics.Matrix
-import android.net.Uri
-import android.os.ParcelFileDescriptor
-import android.util.Log
-import androidx.exifinterface.media.ExifInterface
-import org.json.JSONException
-import org.json.JSONObject
-import java.io.FileDescriptor
-import java.io.FileNotFoundException
-import java.io.IOException
-import kotlin.math.floor
-import kotlin.math.max
-import kotlin.math.min
-import kotlin.concurrent.thread
-
-import com.nativescript.apputils.FunctionCallback
-
-/**
- * This class contains helper functions for processing images
- *
- * @constructor creates image util
- */
-class ImageUtils {
-
-    class LoadImageOptions {
-        var options: JSONObject? = null
-        var sourceWidth = 0
-        var sourceHeight = 0
-        var width = 0
-        var maxWidth = 0
-        var height = 0
-        var maxHeight = 0
-        var keepAspectRatio = true
-        var autoScaleFactor = true
-
-        fun initWithJSON(jsonOpts: JSONObject)
-        {
-            options = jsonOpts
-            if (jsonOpts.has("resizeThreshold")) {
-                maxWidth = jsonOpts.optInt("resizeThreshold", maxWidth)
-                maxHeight = maxWidth
-            } else if (jsonOpts.has("maxSize")) {
-                maxWidth = jsonOpts.optInt("maxSize", maxWidth)
-                maxHeight = maxWidth
-            }
-            if (jsonOpts.has("width")) {
-                width = jsonOpts.optInt("width", width)
-            } else if (jsonOpts.has("maxWidth")) {
-                maxWidth = jsonOpts.optInt("maxWidth", maxWidth)
-            }
-            if (jsonOpts.has("height")) {
-                height = jsonOpts.optInt("height", height)
-            } else if (jsonOpts.has("maxHeight")) {
-                maxHeight = jsonOpts.optInt("maxHeight", maxHeight)
-            }
-            sourceWidth = jsonOpts.optInt("sourceWidth", sourceWidth)
-            sourceHeight = jsonOpts.optInt("sourceHeight", sourceHeight)
-            keepAspectRatio = jsonOpts.optBoolean("keepAspectRatio", keepAspectRatio)
-            autoScaleFactor = jsonOpts.optBoolean("autoScaleFactor", autoScaleFactor)
-
-        }
-        constructor(options: String?) {
-            if (options != null) {
-                try {
-                    val jsonOpts = JSONObject(options)
-                    initWithJSON(jsonOpts)
-                } catch (ignored: JSONException) {
-                }
-            }
-        }
-        constructor(jsonOpts: JSONObject) {
-            initWithJSON(jsonOpts)
-        }
-
-        var resizeThreshold = 0
-            get() { return min(maxWidth, maxHeight)}
-
-
+extension UIImage.Orientation {
+  init(_ cgOrientation: CGImagePropertyOrientation) {
+    switch cgOrientation {
+    case .up: self = .up
+    case .upMirrored: self = .upMirrored
+    case .down: self = .down
+    case .downMirrored: self = .downMirrored
+    case .left: self = .left
+    case .leftMirrored: self = .leftMirrored
+    case .right: self = .right
+    case .rightMirrored: self = .rightMirrored
     }
-
-    class ImageAssetOptions {
-        var width = 0
-        var height = 0
-        var keepAspectRatio = true
-        var autoScaleFactor = true
-
-        constructor(sourceSize: Pair<Int, Int>) {
-            width = sourceSize.first
-            height = sourceSize.second
+  }
+}
+@objcMembers
+@objc(ImageUtils)
+class ImageUtils : NSObject {
+  
+  static func toJSON(_ str: String?) -> NSDictionary? {
+    guard let data = str?.data(using: .utf8, allowLossyConversion: false) else { return nil }
+    return try? (JSONSerialization.jsonObject(with: data, options: .mutableContainers) as! NSDictionary?)
+  }
+  class LoadImageOptions {
+    var width = 0.0
+    var maxWidth = 0.0
+    var height = 0.0
+    var maxHeight = 0.0
+    var keepAspectRatio = true
+    var autoScaleFactor = true
+    
+    func initWithJSONOptions(_ jsonOpts:NSDictionary?){
+      if let jsonOpts = jsonOpts {
+        if ((jsonOpts["resizeThreshold"]) != nil) {
+          maxWidth = jsonOpts["resizeThreshold"] as! Double
+          maxHeight = maxWidth
+        } else if ((jsonOpts["maxSize"]) != nil) {
+          maxWidth = jsonOpts["maxSize"] as! Double
+          maxHeight = maxWidth
         }
-        constructor(sourceSize: Pair<Int, Int>, options: LoadImageOptions?) {
-            width = sourceSize.first
-            height = sourceSize.second
-            if (options != null) {
-                if (options.width > 0) {
-                    width = options.width
-                }
-                if (options.height > 0) {
-                    height = options.height
-                }
-                if (options.maxWidth > 0) {
-                    width = min(
-                        width,
-                        options.maxWidth
-                    )
-                }
-                if (options.maxHeight > 0) {
-                    height = min(
-                        height,
-                        options.maxHeight
-                    )
-                }
-                keepAspectRatio = options.keepAspectRatio
-                autoScaleFactor = options.autoScaleFactor
-            }
+        if ((jsonOpts["width"]) != nil) {
+          width = jsonOpts["width"] as! Double
+        } else if ((jsonOpts["maxWidth"]) != nil) {
+          maxWidth = jsonOpts["maxWidth"] as! Double
         }
+        if ((jsonOpts["height"]) != nil) {
+          height = jsonOpts["height"] as! Double
+        } else if ((jsonOpts["maxHeight"]) != nil) {
+          maxHeight = jsonOpts["maxHeight"] as! Double
+        }
+        if ((jsonOpts["keepAspectRatio"]) != nil) {
+          keepAspectRatio = jsonOpts["keepAspectRatio"] as! Bool
+        }
+        if ((jsonOpts["autoScaleFactor"]) != nil) {
+          autoScaleFactor = jsonOpts["autoScaleFactor"] as! Bool
+        }
+      }
     }
-    companion object {
-        fun getTargetFormat(format: String?): Bitmap.CompressFormat {
-            return when (format) {
-                "jpeg", "jpg" -> Bitmap.CompressFormat.JPEG
-                else -> Bitmap.CompressFormat.PNG
-            }
-        }
-        /**
-         * Calculate an inSampleSize for use in a [BitmapFactory.Options] object when decoding
-         * bitmaps using the decode* methods from [BitmapFactory]. This implementation calculates
-         * the closest inSampleSize that is a power of 2 and will result in the final decoded bitmap
-         * having a width and height equal to or larger than the requested width and height.
-         *
-         * @param imageWidth  The original width of the resulting bitmap
-         * @param imageHeight The original height of the resulting bitmap
-         * @param reqWidth    The requested width of the resulting bitmap
-         * @param reqHeight   The requested height of the resulting bitmap
-         * @return The value to be used for inSampleSize
-         */
-        fun calculateInSampleSize(
-            imageWidth: Int,
-            imageHeight: Int,
-            reqWidth: Int,
-            reqHeight: Int
-        ): Int {
-            // BEGIN_INCLUDE (calculate_sample_size)
-            // Raw height and width of image
-            var reqWidth = reqWidth
-            var reqHeight = reqHeight
-            reqWidth = if (reqWidth > 0) reqWidth else imageWidth
-            reqHeight = if (reqHeight > 0) reqHeight else imageHeight
-            var inSampleSize = 1
-            if (imageHeight > reqHeight || imageWidth > reqWidth) {
-                val halfHeight = imageHeight / 2
-                val halfWidth = imageWidth / 2
-
-                // Calculate the largest inSampleSize value that is a power of 2 and keeps both
-                // height and width larger than the requested height and width.
-                while (halfHeight / inSampleSize > reqHeight && halfWidth / inSampleSize > reqWidth) {
-                    inSampleSize *= 2
-                }
-
-                // This offers some additional logic in case the image has a strange
-                // aspect ratio. For example, a panorama may have a much larger
-                // width than height. In these cases the total pixels might still
-                // end up being too large to fit comfortably in memory, so we should
-                // be more aggressive with sample down the image (=larger inSampleSize).
-                var totalPixels =
-                    (imageWidth / inSampleSize * (imageHeight / inSampleSize)).toLong()
-
-                // Anything more than 2x the requested pixels we'll sample down further
-                val totalReqPixelsCap = (reqWidth * reqHeight * 2).toLong()
-                while (totalPixels > totalReqPixelsCap) {
-                    inSampleSize *= 2
-                    totalPixels =
-                        (imageWidth / inSampleSize * (imageHeight / inSampleSize)).toLong()
-                }
-            }
-            return inSampleSize
-            // END_INCLUDE (calculate_sample_size)
-        }
-
-        private fun getAspectSafeDimensions(
-            sourceWidth: Int,
-            sourceHeight: Int,
-            reqWidth: Int,
-            reqHeight: Int
-        ): Pair<Int, Int> {
-            val widthCoef = sourceWidth.toDouble() / reqWidth.toDouble()
-            val heightCoef = sourceHeight.toDouble() / reqHeight.toDouble()
-            val imageRatio = sourceWidth.toDouble() / sourceHeight.toDouble()
-//            val aspectCoef = max(widthCoef, heightCoef)
-            if (widthCoef > heightCoef) {
-                return Pair(reqWidth, (reqWidth/imageRatio).toInt())
-            } else {
-                return Pair((reqHeight*imageRatio).toInt(), reqHeight)
-
-            }
-//            return Pair(
-//                ((sourceWidth / aspectCoef)).toInt(),
-//                ((sourceHeight / aspectCoef)).toInt()
-//            )
-        }
-        private fun getRequestedImageSize(
-            src: Pair<Int, Int>,
-            options: ImageAssetOptions
-        ): Pair<Int, Int> {
-            var reqWidth = options.width
-            if (reqWidth <= 0) {
-                reqWidth = src.first
-            }
-            var reqHeight = options.height
-            if (reqHeight <= 0) {
-                reqHeight = src.second
-            }
-            if (options.keepAspectRatio) {
-                val (first, second) = getAspectSafeDimensions(
-                    src.first,
-                    src.second,
-                    reqWidth,
-                    reqHeight
-                )
-                reqWidth = first
-                reqHeight = second
-            }
-            return Pair(reqWidth, reqHeight)
-        }
-
-        private fun closePfd(pfd: ParcelFileDescriptor?) {
-            if (pfd != null) {
-                try {
-                    pfd.close()
-                } catch (ignored: IOException) {
-                }
-            }
-        }
-
-        private fun calculateAngleFromFile(filename: String): Int {
-            var rotationAngle = 0
-            val ei: ExifInterface
-            try {
-                ei = ExifInterface(filename)
-                val orientation = ei.getAttributeInt(
-                    ExifInterface.TAG_ORIENTATION,
-                    ExifInterface.ORIENTATION_NORMAL
-                )
-                when (orientation) {
-                    ExifInterface.ORIENTATION_ROTATE_90 -> rotationAngle = 90
-                    ExifInterface.ORIENTATION_ROTATE_180 -> rotationAngle = 180
-                    ExifInterface.ORIENTATION_ROTATE_270 -> rotationAngle = 270
-                }
-            } catch (ignored: IOException) {
-            }
-            return rotationAngle
-        }
-
-
-        private fun calculateAngleFromFileDescriptor(fd: FileDescriptor): Int {
-            var rotationAngle = 0
-            val ei: ExifInterface
-            try {
-                ei = ExifInterface(fd)
-                val orientation = ei.getAttributeInt(
-                    ExifInterface.TAG_ORIENTATION,
-                    ExifInterface.ORIENTATION_NORMAL
-                )
-                when (orientation) {
-                    ExifInterface.ORIENTATION_ROTATE_90 -> rotationAngle = 90
-                    ExifInterface.ORIENTATION_ROTATE_180 -> rotationAngle = 180
-                    ExifInterface.ORIENTATION_ROTATE_270 -> rotationAngle = 270
-                }
-            } catch (ignored: IOException) {
-            }
-            return rotationAngle
-        }
-        fun getImageSize(context: Context, src: String): IntArray {
-            val bitmapOptions = BitmapFactory.Options()
-            bitmapOptions.inJustDecodeBounds = true
-            var pfd: ParcelFileDescriptor? = null
-            if (src.startsWith("content://")) {
-                val uri = Uri.parse(src)
-                val resolver: ContentResolver = context.getContentResolver()
-                pfd = try {
-                    resolver.openFileDescriptor(uri, "r")
-                } catch (e: FileNotFoundException) {
-                    closePfd(pfd)
-                    throw e;
-                }
-                BitmapFactory.decodeFileDescriptor(pfd!!.fileDescriptor, null, bitmapOptions)
-            } else {
-                BitmapFactory.decodeFile(src, bitmapOptions)
-            }
-            val rotationAngle: Int
-            if (pfd != null) {
-                rotationAngle = calculateAngleFromFileDescriptor(pfd.fileDescriptor)
-                closePfd(pfd)
-            } else {
-                rotationAngle = calculateAngleFromFile(src)
-            }
-            return intArrayOf(bitmapOptions.outWidth, bitmapOptions.outHeight, rotationAngle)
-        }
-
-        fun readBitmapFromFileSync(context: Context, src: String, options: LoadImageOptions?, sourceSize:Pair<Int, Int>?): Bitmap? {
-            //  val start = System.currentTimeMillis()
-            var sourceSize = sourceSize
-            if (sourceSize == null && options?.sourceWidth != 0 && options?.sourceHeight != 0) {
-                sourceSize = Pair(options!!.sourceWidth, options!!.sourceHeight)
-            }
-            var bitmap: Bitmap?
-            val bitmapOptions = BitmapFactory.Options()
-            var pfd: ParcelFileDescriptor? = null
-            if (src.startsWith("content://")) {
-                val uri = Uri.parse(src)
-                val resolver: ContentResolver = context.getContentResolver()
-                pfd = try {
-                    resolver.openFileDescriptor(uri, "r")
-                } catch (e: FileNotFoundException) {
-                    closePfd(pfd)
-                    throw e;
-                }
-            }
-            if (sourceSize == null) {
-                bitmapOptions.inJustDecodeBounds = true
-
-                if (pfd != null) {
-                    BitmapFactory.decodeFileDescriptor(pfd!!.fileDescriptor, null, bitmapOptions)
-                } else {
-                    BitmapFactory.decodeFile(src, bitmapOptions)
-                }
-                sourceSize = Pair(bitmapOptions.outWidth, bitmapOptions.outHeight)
-            }
-            val opts = ImageAssetOptions(sourceSize, options)
-
-            val (first, second) = getRequestedImageSize(sourceSize, opts)
-            val sampleSize: Int = calculateInSampleSize(
-                sourceSize.first, sourceSize.second,
-                first,
-                second
-            )
-            val finalBitmapOptions = BitmapFactory.Options()
-            finalBitmapOptions.inSampleSize = sampleSize
-            if (sampleSize != 1) {
-                finalBitmapOptions.inScaled = true;
-                finalBitmapOptions.inDensity = sourceSize.first;
-                finalBitmapOptions.inTargetDensity =  first * sampleSize;
-            } else {
-                finalBitmapOptions.inScaled = false;
-            }
-            // read as minimum bitmap as possible (slightly bigger than the requested size)
-            bitmap = if (pfd != null) {
-                BitmapFactory.decodeFileDescriptor(pfd.fileDescriptor, null, finalBitmapOptions)
-            } else {
-                BitmapFactory.decodeFile(src, finalBitmapOptions)
-            }
-            // Log.d("ImageAnalysis", "readBitmapFromFile in ${System.currentTimeMillis() - start} ms")
-            if (bitmap != null) {
-                val rotationAngle: Int
-                if (pfd != null) {
-                    rotationAngle = calculateAngleFromFileDescriptor(pfd.fileDescriptor)
-                    closePfd(pfd)
-                } else {
-                    rotationAngle = calculateAngleFromFile(src)
-                }
-//                if (first !== bitmap.getWidth() || second !== bitmap.getHeight()  || rotationAngle != 0) {
-//
-//                    val matrix = Matrix()
-//                    if (first !== bitmap.getWidth() || second !== bitmap.getHeight()) {
-//                        val scale = first.toFloat() / bitmap.width
-//                        matrix.postScale(scale, scale)
-//                    }
-//                    if (rotationAngle != 0) {
-//                        matrix.postRotate(rotationAngle.toFloat())
-//                    }
-//                    bitmap = Bitmap.createBitmap(
-//                        bitmap,
-//                        0,
-//                        0,
-//                        bitmap.getWidth(),
-//                        bitmap.getHeight(),
-//                        matrix,
-//                        false
-//                    )
-//                }
-
-                if (rotationAngle != 0) {
-                    val matrix = Matrix()
-                    matrix.postRotate(rotationAngle.toFloat())
-                    bitmap = Bitmap.createBitmap(
-                        bitmap,
-                        0,
-                        0,
-                        bitmap.getWidth(),
-                        bitmap.getHeight(),
-                        matrix,
-                        true
-                    )
-                }
-                // Log.d("ImageAnalysis", "readBitmapFromFile2 in ${System.currentTimeMillis() - start} ms")
-            }
-            return bitmap
-        }
-
-        fun readBitmapFromFileSync(context: Context, src: String, opts: String?): Bitmap? {
-            return readBitmapFromFileSync(context, src, LoadImageOptions(opts), null)
-        }
-        fun readBitmapFromFile(context: Context, src: String, callback: FunctionCallback, opts: String?) {
-            thread(start = true) {
-                try {
-                    callback.onResult(null, readBitmapFromFileSync(context, src, opts))
-                } catch (e: Exception) {
-                    callback.onResult(e, null)
-                }
-            }
-        }
+    
+    init(_ optionsStr:String?) {
+      initWithJSONOptions(toJSON(optionsStr))
     }
+    init( jsonOpts:NSDictionary?) {
+      initWithJSONOptions(jsonOpts)
+    }
+  }
+  class ImageAssetOptions {
+    var width = 0.0
+    var height = 0.0
+    var keepAspectRatio = true
+    var autoScaleFactor = true
+    init (_ size: CGSize, options: LoadImageOptions?) {
+      width = size.width
+      height = size.height
+      if (options != nil) {
+        if (options!.width > 0) {
+          width = options!.width
+        }
+        if (options!.height > 0) {
+          height = options!.height
+        }
+        if (options!.maxWidth > 0) {
+          width = min(
+            width,
+            options!.maxWidth
+          )
+        }
+        if (options!.maxHeight > 0) {
+          height = min(
+            height,
+            options!.maxHeight
+          )
+        }
+        keepAspectRatio = options!.keepAspectRatio
+        autoScaleFactor = options!.autoScaleFactor
+      }
+    }
+  }
+  
+  static func getAspectSafeDimensions(
+    _ sourceWidth: Double,
+    _ sourceHeight: Double,
+    _ reqWidth: Double,
+    _ reqHeight: Double
+  ) -> CGSize {
+    let widthCoef = sourceWidth / reqWidth
+    let heightCoef = sourceHeight / reqHeight
+    let aspectCoef = max(widthCoef, heightCoef)
+    return CGSize(width: floor((sourceWidth / aspectCoef)), height: floor((sourceHeight / aspectCoef)))
+  }
+  static func getRequestedImageSize(_ size: CGSize, _ options: ImageAssetOptions) -> CGSize {
+    var reqWidth = options.width
+    if (reqWidth <= 0) {
+      reqWidth = size.width
+    }
+    var reqHeight = options.height
+    if (reqHeight <= 0) {
+      reqHeight = size.height
+    }
+    if (options.keepAspectRatio) {
+      let size2 = getAspectSafeDimensions(
+        size.width,
+        size.height,
+        reqWidth,
+        reqHeight
+      )
+      reqWidth = size2.width
+      reqHeight = size2.height
+    }
+    return CGSize(width: reqWidth, height: reqHeight)
+  }
+  
+  // this scales an image but also return the image "rotated"
+  // based on imageOrientation
+  static func scaleImage(_ image: UIImage, _ scaledImageSize: CGSize) -> UIImage? {
+    // Create a graphics context
+    UIGraphicsBeginImageContextWithOptions(scaledImageSize, false, image.scale)
+    // Draw the image in the new size
+    image.draw(in: CGRect(
+      origin: .zero,
+      size: scaledImageSize
+    ))
+    // Get the resized, scaled, and rotated image from the context
+    let resizedScaledRotatedImage = UIGraphicsGetImageFromCurrentImageContext()
+    
+    // End the graphics context
+    UIGraphicsEndImageContext()
+    
+    return resizedScaledRotatedImage
+  }
+  
+  static func getImageSize(_ src: String) -> Dictionary<String, Any>? {
+    let url = NSURL.fileURL(withPath: src)
+    let imageSource = CGImageSourceCreateWithURL(url as CFURL, nil);
+    if (imageSource == nil) {
+      // Error loading image
+      return nil;
+    }
+    
+    let options = [kCGImageSourceShouldCache:false];
+    let imageProperties = CGImageSourceCopyPropertiesAtIndex(imageSource!, 0, options as CFDictionary) as! [NSString: Any]? ;
+    var result: Dictionary<String, Any>?;
+    if (imageProperties != nil) {
+      let width = imageProperties![kCGImagePropertyPixelWidth] as! Double;
+      let height = imageProperties![kCGImagePropertyPixelHeight] as! Double;
+      var degrees: Int = 0
+      let orientation = imageProperties![kCGImagePropertyOrientation];
+      if (orientation != nil) {
+        let uiOrientation = UIImage.Orientation.init(CGImagePropertyOrientation(rawValue: UInt32(orientation as! Int))!);
+        switch uiOrientation {
+        case .down, .downMirrored:
+          degrees = 180
+          break
+        case .right, .rightMirrored:
+          degrees = -90
+          break
+        case .left, .leftMirrored:
+          degrees = 90
+          break
+        default:
+          degrees = 0
+        }
+      }
+      
+      result = ["width": width, "height": height, "rotation":degrees];
+    }
+    return result;
+  }
+  
+  
+  static func readImageFromFileSync(_ src: String, options: NSDictionary?) -> UIImage? {
+    let image = UIImage(contentsOfFile: src)
+    if let image {
+      let size = image.size
+      let imageOrientation = image.imageOrientation
+      let loadImageOptions = LoadImageOptions(jsonOpts: options)
+      let opts = ImageAssetOptions(size, options: loadImageOptions)
+      let requestedSize = getRequestedImageSize(size, opts)
+      var result: UIImage? = image
+      if (requestedSize.width != size.width || requestedSize.height != size.height || imageOrientation != .up) {
+        result = scaleImage(image, requestedSize )
+      }
+      if (options?["jpegQuality"] != nil) {
+        result = UIImage.init(data: result!.jpegData(compressionQuality: CGFloat((options!["jpegQuality"] as! Int)) / 100.0)!)
+      }
+      
+      return result
+    }
+    return nil
+    
+  }
+  
+  static func readImageFromFileSync(_ src: String, _ stringOptions: String?) -> UIImage? {
+    let options = toJSON(stringOptions)
+    return readImageFromFileSync(src, options: options)
+  }
+  static func readImageFromFile(_ src: String, _ delegate: NCompletionDelegate?, _ stringOptions: String?) {
+    DispatchQueue.global(qos: .userInitiated).async {
+      let options = toJSON(stringOptions)
+      //       do {
+      delegate?.onComplete(readImageFromFileSync(src, stringOptions) as NSObject?, error: nil)
+      
+      //       } catch {
+      //         delegate?.onComplete(readImageFromFileSync(src, stringOptions) as NSObject?, error: error as NSError?)
+      //
+      //       }
+    }
+  }
 }

@@ -2,18 +2,18 @@ import Foundation
 import UIKit
 
 extension UIImage.Orientation {
-    init(_ cgOrientation: CGImagePropertyOrientation) {
-        switch cgOrientation {
-            case .up: self = .up
-            case .upMirrored: self = .upMirrored
-            case .down: self = .down
-            case .downMirrored: self = .downMirrored
-            case .left: self = .left
-            case .leftMirrored: self = .leftMirrored
-            case .right: self = .right
-            case .rightMirrored: self = .rightMirrored
-        }
+  init(_ cgOrientation: CGImagePropertyOrientation) {
+    switch cgOrientation {
+    case .up: self = .up
+    case .upMirrored: self = .upMirrored
+    case .down: self = .down
+    case .downMirrored: self = .downMirrored
+    case .left: self = .left
+    case .leftMirrored: self = .leftMirrored
+    case .right: self = .right
+    case .rightMirrored: self = .rightMirrored
     }
+  }
 }
 @objcMembers
 @objc(ImageUtils)
@@ -165,22 +165,25 @@ class ImageUtils : NSObject {
     if (imageProperties != nil) {
       let width = imageProperties![kCGImagePropertyPixelWidth] as! Double;
       let height = imageProperties![kCGImagePropertyPixelHeight] as! Double;
-      let orientation = imageProperties![kCGImagePropertyOrientation] as! Int;
-      let uiOrientation = UIImage.Orientation.init(CGImagePropertyOrientation(rawValue: UInt32(orientation))!);
       var degrees: Int = 0
-      switch uiOrientation {
-      case .down, .downMirrored:
-        degrees = 180
-        break
-      case .right, .rightMirrored:
-        degrees = -90
-        break
-      case .left, .leftMirrored:
-        degrees = 90
-        break
-      default:
-        degrees = 0
+      let orientation = imageProperties![kCGImagePropertyOrientation];
+      if (orientation != nil) {
+        let uiOrientation = UIImage.Orientation.init(CGImagePropertyOrientation(rawValue: UInt32(orientation as! Int))!);
+        switch uiOrientation {
+        case .down, .downMirrored:
+          degrees = 180
+          break
+        case .right, .rightMirrored:
+          degrees = -90
+          break
+        case .left, .leftMirrored:
+          degrees = 90
+          break
+        default:
+          degrees = 0
+        }
       }
+      
       result = ["width": width, "height": height, "rotation":degrees];
     }
     return result;
@@ -214,15 +217,15 @@ class ImageUtils : NSObject {
     return readImageFromFileSync(src, options: options)
   }
   static func readImageFromFile(_ src: String, _ delegate: NCompletionDelegate?, _ stringOptions: String?) {
-     DispatchQueue.global(qos: .userInitiated).async {
+    DispatchQueue.global(qos: .userInitiated).async {
       let options = toJSON(stringOptions)
-//       do {
-         delegate?.onComplete(readImageFromFileSync(src, stringOptions) as NSObject?, error: nil)
-
-//       } catch {
-//         delegate?.onComplete(readImageFromFileSync(src, stringOptions) as NSObject?, error: error as NSError?)
-//
-//       }
-     }
+      //       do {
+      delegate?.onComplete(readImageFromFileSync(src, stringOptions) as NSObject?, error: nil)
+      
+      //       } catch {
+      //         delegate?.onComplete(readImageFromFileSync(src, stringOptions) as NSObject?, error: error as NSError?)
+      //
+      //       }
+    }
   }
 }

@@ -3,6 +3,18 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [2.1.6](https://github.com/akylas/nativescript-app-utils/compare/v2.1.5...v2.1.6) (2024-11-08)
+
+### Bug Fixes
+
+* regression fix ([88f15db](https://github.com/akylas/nativescript-app-utils/commit/88f15db1e7b5be77f398c659d650c8500f6436e6))
+
+## [2.1.5](https://github.com/akylas/nativescript-app-utils/compare/v2.1.4...v2.1.5) (2024-11-08)
+
+### Bug Fixes
+
+* **ios:** getImageSize fix ([fff82d7](https://github.com/akylas/nativescript-app-utils/commit/fff82d79420ecffac199934905bf00683c466913))
+
 ## [2.1.4](https://github.com/akylas/nativescript-app-utils/compare/v2.1.3...v2.1.4) (2024-10-20)
 
 ### Bug Fixes

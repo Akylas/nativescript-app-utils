@@ -15,6 +15,8 @@ __metadata:
 "@akylas/nativescript-app-utils@npm:*, @akylas/nativescript-app-utils@workspace:packages/app-utils":
   version: 0.0.0-use.local
   resolution: "@akylas/nativescript-app-utils@workspace:packages/app-utils"
+  dependencies:
+    "@nativescript-community/ui-share-file": "npm:1.3.3"
   languageName: unknown
   linkType: soft
 
@@ -1651,6 +1653,13 @@ __metadata:
     vue-property-decorator: "npm:^8.5.1"
   languageName: unknown
   linkType: soft
+
+"@nativescript-community/ui-share-file@npm:1.3.3":
+  version: 1.3.3
+  resolution: "@nativescript-community/ui-share-file@npm:1.3.3"
+  checksum: b4e512f5a9e8681dc35dfd683aa76e66cae8298c037468c06ce3697ee5ab64e1adb181659e8798bb4b12870631fbabc09958f1bf959c714dcaebe739da9bb3aa
+  languageName: node
+  linkType: hard
 
 "@nativescript/android@npm:~8.8.4":
   version: 8.8.5
@@ -12527,6 +12536,7 @@ __metadata:
   resolution: "root-workspace-0b6124@workspace:."
   dependencies:
     "@nativescript-community/plugin-seed-tools": "file:tools"
+    "@nativescript-community/ui-share-file": "npm:1.3.3"
   languageName: unknown
   linkType: soft
 
@@ -14350,11 +14360,11 @@ __metadata:
 
 "typescript@patch:typescript@npm%3A5.3.3#optional!builtin<compat/typescript>":
   version: 5.3.3
-  resolution: "typescript@patch:typescript@npm%3A5.3.3#optional!builtin<compat/typescript>::version=5.3.3&hash=e012d7"
+  resolution: "typescript@patch:typescript@npm%3A5.3.3#optional!builtin<compat/typescript>::version=5.3.3&hash=29ae49"
   bin:
     tsc: bin/tsc
     tsserver: bin/tsserver
-  checksum: c93786fcc9a70718ba1e3819bab56064ead5817004d1b8186f8ca66165f3a2d0100fee91fa64c840dcd45f994ca5d615d8e1f566d39a7470fc1e014dbb4cf15d
+  checksum: 57bf073a0b88f9bf76e5a24be3df864a8f9d0e70f8316969f4992ae26e30cb8d078708922da2ade1f2c8d1faee13b28bcb69876ebb1e37910e31c54aa9126aa2
   languageName: node
   linkType: hard
 
@@ -14370,7 +14380,7 @@ __metadata:
 
 "typescript@patch:typescript@npm%3A~5.4.5#optional!builtin<compat/typescript>":
   version: 5.4.5
-  resolution: "typescript@patch:typescript@npm%3A5.4.5#optional!builtin<compat/typescript>::version=5.4.5&hash=e012d7"
+  resolution: "typescript@patch:typescript@npm%3A5.4.5#optional!builtin<compat/typescript>::version=5.4.5&hash=29ae49"
   bin:
     tsc: bin/tsc
     tsserver: bin/tsserver

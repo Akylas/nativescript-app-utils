@@ -30,6 +30,7 @@ declare namespace com {
                     static getSystemLocale(): java.util.Locale;
                     static getRootWindowInsets(view: android.view.View): number[];
                     static listenForWindowInsetsChange(view: android.view.View, callback: WindowInsetsCallback);
+                    static guessMimeType(context: android.content.Context, uri: android.net.Uri);
                 }
             }
             export class ImageUtils extends java.lang.Object {

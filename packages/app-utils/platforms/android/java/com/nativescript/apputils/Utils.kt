@@ -110,5 +110,13 @@ class Utils {
 
             }
         }
+
+        fun guessMimeType(context: Context, uri: android.net.Uri): String? {
+            val type = android.webkit.MimeTypeMap.getSingleton().getExtensionFromMimeType(context.getContentResolver().getType(uri));
+            if (type != null) {
+                return android.webkit.MimeTypeMap.getSingleton().getMimeTypeFromExtension(type);
+            }
+            return null
+        }
     }
 }

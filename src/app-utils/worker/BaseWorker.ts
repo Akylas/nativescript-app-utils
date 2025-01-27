@@ -20,7 +20,6 @@ export interface IWorker extends BaseWorker {
     onmessage: Function;
     postMessage(event: WorkerPostEvent);
 }
-const TAG = '[BaseWorker]';
 
 export abstract class BaseWorker extends Observable {
     constructor(protected context) {

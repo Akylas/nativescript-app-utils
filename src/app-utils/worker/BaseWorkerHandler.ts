@@ -5,6 +5,9 @@ import type { BaseWorker, WorkerEventType, WorkerPostEvent } from './BaseWorker'
 import Queue from './queue';
 
 export default abstract class BaseWorkerHandler<T extends BaseWorker> extends Observable {
+    constructor(private createWorker: () => Worker) {
+        super();
+    }
     worker: T;
     messagePromises: { [key: string]: { resolve: Function; reject: Function; timeoutTimer: number }[] } = {};
     abstract onWorkerEvent(eventData);
@@ -48,7 +51,7 @@ export default abstract class BaseWorkerHandler<T extends BaseWorker> extends Ob
                     this.notify({ eventName: 'worker_started' });
                     break;
                 case 'terminate':
-                    // DEV_LOG && console.info('worker stopped');
+                    // console.info('worker stopped');
                     this.worker = null;
                     break;
             }
@@ -71,10 +74,10 @@ export default abstract class BaseWorkerHandler<T extends BaseWorker> extends Ob
                         }
                         resolve();
                     });
-                    const worker = (this.worker = new Worker('~/workers/SyncWorkerBootstrap') as any);
+                    const worker = (this.worker = this.createWorker() as any);
                     worker.onmessage = this.onWorkerMessage.bind(this);
                     const timeoutTimer = setTimeout(() => {
-                        reject(new Error('failed_to_start_sync_worker'));
+                        reject(new Error('failed_to_start_worker'));
                     }, 2000);
                 });
             }
@@ -137,6 +140,7 @@ export default abstract class BaseWorkerHandler<T extends BaseWorker> extends Ob
             };
             // DEV_LOG && console.info('Sync', 'postMessage', JSON.stringify(data));
             await this.internalSendMessageToWorker(data);
+            return null;
         }
     }
 }

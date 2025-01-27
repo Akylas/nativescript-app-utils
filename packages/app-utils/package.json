@@ -1,6 +1,6 @@
 {
     "name": "@akylas/nativescript-app-utils",
-    "version": "2.2.1",
+    "version": "2.2.2",
     "description": "Provides API for changing the styles of SystemUI (StatusBar, NavigationBar...) on iOS.",
     "main": "index",
     "sideEffects": false,

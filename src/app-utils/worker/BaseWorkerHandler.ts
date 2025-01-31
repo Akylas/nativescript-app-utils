@@ -76,6 +76,10 @@ export default abstract class BaseWorkerHandler<T extends BaseWorker> extends Ob
                     });
                     const worker = (this.worker = this.createWorker() as any);
                     worker.onmessage = this.onWorkerMessage.bind(this);
+                    worker.onerror = (e) => {
+                        reject(e);
+                        this.worker = null;
+                    };
                     const timeoutTimer = setTimeout(() => {
                         reject(new Error('failed_to_start_worker'));
                     }, 2000);

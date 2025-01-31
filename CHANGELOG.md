@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [2.2.3](https://github.com/akylas/nativescript-app-utils/compare/v2.2.2...v2.2.3) (2025-01-31)
+
+### Bug Fixes
+
+* worker.onerror support ([3b40909](https://github.com/akylas/nativescript-app-utils/commit/3b4090976b38b3815064c925e1b9c438533d8b73))
+
 ## [2.2.2](https://github.com/akylas/nativescript-app-utils/compare/v2.2.1...v2.2.2) (2025-01-27)
 
 ### Features

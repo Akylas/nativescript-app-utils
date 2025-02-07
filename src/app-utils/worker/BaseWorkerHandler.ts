@@ -93,35 +93,36 @@ export default abstract class BaseWorkerHandler<T extends BaseWorker> extends Ob
         if (!isResponse && (id || timeout)) {
             return new Promise(async (resolve, reject) => {
                 // const id = Date.now().valueOf();
-                id = id || time();
-                this.messagePromises[id] = this.messagePromises[id] || [];
-                let timeoutTimer;
-                if (timeout > 0) {
-                    timeoutTimer = setTimeout(() => {
-                        // we need to try catch because the simple fact of creating a new Error actually throws.
-                        // so we will get an uncaughtException
-                        try {
-                            reject(new Error('timeout'));
-                        } catch {}
-                        delete this.messagePromises[id];
-                    }, timeout);
-                }
-                this.messagePromises[id].push({ reject, resolve, timeoutTimer });
-                const keys = Object.keys(nativeData);
-                const nativeDataKeysPrefix = Date.now() + '$$$';
-                keys.forEach((k) => {
-                    setWorkerContextValue(nativeDataKeysPrefix + k, nativeData[k]._native || nativeData[k]);
-                });
-                const data = {
-                    error: !!error ? JSON.stringify(error.toJSON() ? error.toJSON() : { message: error.toString(), ...error }) : undefined,
-                    id,
-                    nativeDataKeysPrefix,
-                    messageData: !!messageData ? JSON.stringify(messageData) : undefined,
-                    nativeData: keys.map((k) => nativeDataKeysPrefix + k),
-                    type
-                };
-                // DEV_LOG && console.info('Sync', 'postMessage', JSON.stringify(data));
+
                 try {
+                    id = id || time();
+                    this.messagePromises[id] = this.messagePromises[id] || [];
+                    let timeoutTimer;
+                    if (timeout > 0) {
+                        timeoutTimer = setTimeout(() => {
+                            // we need to try catch because the simple fact of creating a new Error actually throws.
+                            // so we will get an uncaughtException
+                            try {
+                                reject(new Error('timeout'));
+                            } catch {}
+                            delete this.messagePromises[id];
+                        }, timeout);
+                    }
+                    this.messagePromises[id].push({ reject, resolve, timeoutTimer });
+                    const keys = nativeData ? Object.keys(nativeData) : [];
+                    const nativeDataKeysPrefix = Date.now() + '$$$';
+                    keys.forEach((k) => {
+                        setWorkerContextValue(nativeDataKeysPrefix + k, nativeData[k]._native || nativeData[k]);
+                    });
+                    const data = {
+                        error: !!error ? JSON.stringify(error.toJSON() ? error.toJSON() : { message: error.toString(), ...error }) : undefined,
+                        id,
+                        nativeDataKeysPrefix,
+                        messageData: !!messageData ? JSON.stringify(messageData) : undefined,
+                        nativeData: keys.map((k) => nativeDataKeysPrefix + k),
+                        type
+                    };
+                    // DEV_LOG && console.info('Sync', 'postMessage', JSON.stringify(data));
                     await this.internalSendMessageToWorker(data);
                 } catch (error) {
                     reject(error);

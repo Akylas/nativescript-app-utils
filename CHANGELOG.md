@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [2.2.5](https://github.com/akylas/nativescript-app-utils/compare/v2.2.4...v2.2.5) (2025-02-07)
+
+### Bug Fixes
+
+* sendMessageToWorker error if no nativedata is passed ([b9979b5](https://github.com/akylas/nativescript-app-utils/commit/b9979b5ae95428681ef04d68b3ad0368caf82ba8))
+
 ## [2.2.4](https://github.com/akylas/nativescript-app-utils/compare/v2.2.3...v2.2.4) (2025-02-07)
 
 ### Bug Fixes

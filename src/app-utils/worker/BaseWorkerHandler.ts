@@ -148,3 +148,29 @@ export default abstract class BaseWorkerHandler<T extends BaseWorker> extends Ob
         }
     }
 }
+
+class OneTimeWorkerHandler<T extends BaseWorker> extends BaseWorkerHandler<T> {
+    _onWorkerEvent: (eventData: any) => void;
+    _handleError: (error: any) => void;
+    _handleWorkerError: (error: any) => void;
+    constructor({ onCreate, handleError, onWorkerEvent, handleWorkerError }: { onCreate: () => Worker; handleError?; onWorkerEvent?; handleWorkerError? }) {
+        super(onCreate);
+        this.handleError = handleError;
+        this._handleWorkerError = handleWorkerError;
+        this._onWorkerEvent = onWorkerEvent;
+        this._handleError = handleError;
+    }
+    onWorkerEvent(eventData: any) {
+        this._onWorkerEvent?.(eventData);
+    }
+    handleError(error: any) {
+        this._handleError?.(error);
+    }
+    handleWorkerError(error: any) {
+        this._handleWorkerError?.(error);
+    }
+}
+
+export function createOneTimeWorkerHandler({ onCreate, handleError, onWorkerEvent, handleWorkerError }: { onCreate: () => Worker; handleError?; onWorkerEvent?; handleWorkerError? }) {
+    return new OneTimeWorkerHandler({ onCreate, handleError, onWorkerEvent, handleWorkerError });
+}

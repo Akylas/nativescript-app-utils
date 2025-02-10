@@ -5,7 +5,10 @@ import type { BaseWorker, WorkerEventType, WorkerPostEvent } from './BaseWorker'
 import Queue from './queue';
 
 export default abstract class BaseWorkerHandler<T extends BaseWorker> extends Observable {
-    constructor(private createWorker: () => Worker) {
+    constructor(
+        private createWorker: () => Worker,
+        private startWorkerTimeout = 1000
+    ) {
         super();
     }
     worker: T;
@@ -82,7 +85,7 @@ export default abstract class BaseWorkerHandler<T extends BaseWorker> extends Ob
                     };
                     const timeoutTimer = setTimeout(() => {
                         reject(new Error('failed_to_start_worker'));
-                    }, 2000);
+                    }, this.startWorkerTimeout);
                 });
             }
             this.worker.postMessage(data);

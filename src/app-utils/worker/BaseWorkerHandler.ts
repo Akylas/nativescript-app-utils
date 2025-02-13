@@ -7,7 +7,7 @@ import Queue from './queue';
 export default abstract class BaseWorkerHandler<T extends BaseWorker> extends Observable {
     constructor(
         private createWorker: () => Worker,
-        private startWorkerTimeout = 1000
+        private startWorkerTimeout = 10000
     ) {
         super();
     }

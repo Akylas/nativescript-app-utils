@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [2.2.7](https://github.com/akylas/nativescript-app-utils/compare/v2.2.6...v2.2.7) (2025-02-13)
+
+### Bug Fixes
+
+* regression fix for worker creation timeout ([7f96fd0](https://github.com/akylas/nativescript-app-utils/commit/7f96fd0759a981abb2645800091fa5bf361c09da))
+
 ## [2.2.6](https://github.com/akylas/nativescript-app-utils/compare/v2.2.5...v2.2.6) (2025-02-10)
 
 ### Bug Fixes

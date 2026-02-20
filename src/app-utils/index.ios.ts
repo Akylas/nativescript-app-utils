@@ -68,13 +68,6 @@ export namespace AppUtilsAndroid {
 }
 export function restartApp() {}
 
-export function setWorkerContextValue(key, value) {
-    NWorkerContext.setValue(key, value);
-}
-export function getWorkerContextValue(key) {
-    return NWorkerContext.getValue(key);
-}
-
 export function getISO3Language(lang) {
     return NSLocale.alloc().initWithLocaleIdentifier(lang).ISO639_2LanguageCode();
 }

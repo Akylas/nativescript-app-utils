@@ -1,7 +1,8 @@
+import '@nativescript/core/globals';
 import { time } from '@nativescript/core/profiling';
 import type { Optional } from '@nativescript/core/utils/typescript-utils';
-import { getWorkerContextValue, setWorkerContextValue } from '@akylas/nativescript-app-utils';
 import { EventData, Observable } from '@nativescript/core';
+import { getWorkerContextValue, setWorkerContextValue } from '@akylas/nativescript-app-utils/worker';
 
 export type WorkerEventType = 'event' | 'error' | 'started' | 'terminate';
 

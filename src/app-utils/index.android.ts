@@ -20,7 +20,6 @@ function functionCallbackPromise<T>(onCallback: (calback: com.nativescript.apput
     });
 }
 
-const NWorkerContext = com.nativescript.apputils.WorkersContext.Companion;
 const NUtils = com.nativescript.apputils.Utils;
 const UtilsCompanion = NUtils.Companion;
 export namespace AppUtilsAndroid {
@@ -60,12 +59,6 @@ export namespace AppUtilsAndroid {
 
 export function restartApp() {
     return UtilsCompanion.restartApp(Utils.android.getApplicationContext(), Application.android.startActivity);
-}
-export function setWorkerContextValue(key, value) {
-    NWorkerContext.setValue(key, value);
-}
-export function getWorkerContextValue(key) {
-    return NWorkerContext.getValue(key);
 }
 export function getISO3Language(lang) {
     const locale = java.util.Locale.forLanguageTag(lang);

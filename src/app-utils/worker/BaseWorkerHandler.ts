@@ -1,8 +1,9 @@
-import { setWorkerContextValue } from '@akylas/nativescript-app-utils';
 import { Observable } from '@nativescript/core';
 import { time } from '@nativescript/core/profiling';
 import type { BaseWorker, WorkerEventType, WorkerPostEvent } from './BaseWorker';
 import Queue from './queue';
+import { setWorkerContextValue } from '@akylas/nativescript-app-utils/worker';
+import { CustomError } from '@akylas/nativescript-app-utils/error';
 
 export default abstract class BaseWorkerHandler<T extends BaseWorker> extends Observable {
     constructor(
@@ -80,7 +81,7 @@ export default abstract class BaseWorkerHandler<T extends BaseWorker> extends Ob
                     const worker = (this.worker = this.createWorker() as any);
                     worker.onmessage = this.onWorkerMessage.bind(this);
                     worker.onerror = (e) => {
-                        reject(e);
+                        reject(CustomError.fromObject({ ...e, sentryReportTranslatedName: true }));
                         this.worker = null;
                     };
                     const timeoutTimer = setTimeout(() => {
@@ -157,7 +158,7 @@ class OneTimeWorkerHandler<T extends BaseWorker> extends BaseWorkerHandler<T> {
     _onWorkerEvent: (eventData: any) => void;
     _handleError: (error: any) => void;
     _handleWorkerError: (error: any) => void;
-    constructor({ onCreate, handleError, onWorkerEvent, handleWorkerError }: { onCreate: () => Worker; handleError?; onWorkerEvent?; handleWorkerError? }) {
+    constructor({ handleError, handleWorkerError, onCreate, onWorkerEvent }: { onCreate: () => Worker; handleError?; onWorkerEvent?; handleWorkerError? }) {
         super(onCreate);
         this.handleError = handleError;
         this._handleWorkerError = handleWorkerError;
@@ -175,6 +176,6 @@ class OneTimeWorkerHandler<T extends BaseWorker> extends BaseWorkerHandler<T> {
     }
 }
 
-export function createOneTimeWorkerHandler({ onCreate, handleError, onWorkerEvent, handleWorkerError }: { onCreate: () => Worker; handleError?; onWorkerEvent?; handleWorkerError? }) {
+export function createOneTimeWorkerHandler({ handleError, handleWorkerError, onCreate, onWorkerEvent }: { onCreate: () => Worker; handleError?; onWorkerEvent?; handleWorkerError? }) {
     return new OneTimeWorkerHandler({ onCreate, handleError, onWorkerEvent, handleWorkerError });
 }

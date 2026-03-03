@@ -75,7 +75,7 @@ class Utils {
         }
 
         fun prepareWindow(window: Window?) {
-            WindowCompat.setDecorFitsSystemWindows(window!!, false)
+            WindowCompat.enableEdgeToEdge(window!!)
         }
         fun getRootWindowInsets(view: View): IntArray {
             val windowInsets = ViewCompat.getRootWindowInsets(view) ?: return intArrayOf(0, 0,0, 0, 0)

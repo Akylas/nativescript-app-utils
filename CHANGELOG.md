@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [2.2.9](https://github.com/akylas/nativescript-app-utils/compare/v2.2.8...v2.2.9) (2026-03-03)
+
+### Bug Fixes
+
+* android migration to enableEdgeToEdge ([393b440](https://github.com/akylas/nativescript-app-utils/commit/393b44032b3855c168464c28f8a9d9cd32d80e0d))
+
 ## [2.2.8](https://github.com/akylas/nativescript-app-utils/compare/v2.2.7...v2.2.8) (2026-02-20)
 
 ### Bug Fixes

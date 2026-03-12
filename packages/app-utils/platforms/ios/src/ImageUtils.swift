@@ -21,7 +21,7 @@ class ImageUtils : NSObject {
   
   static func toJSON(_ str: String?) -> NSDictionary? {
     guard let data = str?.data(using: .utf8, allowLossyConversion: false) else { return nil }
-    return try? (JSONSerialization.jsonObject(with: data, options: .mutableContainers) as! NSDictionary?)
+    return (try? JSONSerialization.jsonObject(with: data, options: .mutableContainers)) as? NSDictionary
   }
   class LoadImageOptions {
     var width = 0.0

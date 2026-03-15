@@ -3,6 +3,10 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [2.2.11](https://github.com/akylas/nativescript-app-utils/compare/v2.2.10...v2.2.11) (2026-03-15)
+
+**Note:** Version bump only for package nativescript-app-utils
+
 ## [2.2.10](https://github.com/akylas/nativescript-app-utils/compare/v2.2.9...v2.2.10) (2026-03-12)
 
 ### Bug Fixes

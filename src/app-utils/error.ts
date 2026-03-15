@@ -49,8 +49,8 @@ export class CustomError extends BaseError {
                 return new CustomError(data);
         }
     }
-    constructor(props?, customErrorConstructorName?: string) {
-        super(props.message);
+    constructor(props: any = {}, customErrorConstructorName?: string) {
+        super(props?.message);
         this.message = props.message;
         delete props.message;
 

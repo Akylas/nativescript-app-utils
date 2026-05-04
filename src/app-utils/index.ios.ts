@@ -1,5 +1,7 @@
 import { ImageSource } from '@nativescript/core';
 
+export * from './index-common';
+
 @NativeClass
 class NCompletionDelegateImpl extends NSObject implements NCompletionDelegate {
     static ObjCProtocols = [NCompletionDelegate];

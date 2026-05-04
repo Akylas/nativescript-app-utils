@@ -1,5 +1,7 @@
 import { Application, ImageSource, Utils } from '@nativescript/core';
 
+export * from './index-common';
+
 function functionCallbackPromise<T>(onCallback: (calback: com.nativescript.apputils.FunctionCallback) => void, transformer = (v) => v, errorHandler = (e) => e) {
     return new Promise<T>((resolve, reject) => {
         const callback = new com.nativescript.apputils.FunctionCallback({

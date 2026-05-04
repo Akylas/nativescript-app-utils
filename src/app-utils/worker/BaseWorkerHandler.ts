@@ -2,8 +2,9 @@ import { Observable } from '@nativescript/core';
 import { time } from '@nativescript/core/profiling';
 import type { BaseWorker, WorkerEventType, WorkerPostEvent } from './BaseWorker';
 import Queue from './queue';
-import { setWorkerContextValue } from '@akylas/nativescript-app-utils/worker';
-import { CustomError } from '@akylas/nativescript-app-utils/error';
+import { setWorkerContextValue } from '../worker';
+import { CustomError } from '../error';
+import { timeout } from '../';
 
 export default abstract class BaseWorkerHandler<T extends BaseWorker> extends Observable {
     constructor(
@@ -90,6 +91,8 @@ export default abstract class BaseWorkerHandler<T extends BaseWorker> extends Ob
                 });
             }
             this.worker.postMessage(data);
+            // we need this because it seems that you send messages too fast to worker some can be ignored
+            await timeout(60);
         });
     }
     async sendMessageToWorker<T = any>(type: string, messageData?, id?: number, error?, isResponse = false, timeout = 0, nativeData?): Promise<T> {

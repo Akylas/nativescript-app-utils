@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [2.2.14](https://github.com/akylas/nativescript-app-utils/compare/v2.2.13...v2.2.14) (2026-07-02)
+
+### Bug Fixes
+
+* ios swift 6 support ([9a64111](https://github.com/akylas/nativescript-app-utils/commit/9a64111d91673ee511dd245ff90a7c3ebb810e1c))
+
 ## [2.2.13](https://github.com/akylas/nativescript-app-utils/compare/v2.2.12...v2.2.13) (2026-05-04)
 
 **Note:** Version bump only for package @akylas/nativescript-app-utils

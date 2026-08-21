@@ -1609,6 +1609,20 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@nativescript-community/l@npm:^4.3.12":
+  version: 4.3.12
+  resolution: "@nativescript-community/l@npm:4.3.12"
+  dependencies:
+    "@nativescript/hook": "npm:~2.0.0"
+    make-plural: "npm:^8.0.0"
+    mkdirp: "npm:^1.0.4"
+    shorthash: "npm:0.0.2"
+    simple-plist: "npm:^1.1.1"
+    sprintf-js: "npm:^1.1.2"
+  checksum: 10/fe4490e4f44a7515e00bfbd9230ac590f77519c41d9ccd91f4c54111764168edf0f591efc87b40077e5bbe8e527195448308aaf2073c43844c98fefa37669823
+  languageName: node
+  linkType: hard
+
 "@nativescript-community/plugin-seed-tools@portal:tools::locator=root-workspace-0b6124%40workspace%3A.":
   version: 0.0.0-use.local
   resolution: "@nativescript-community/plugin-seed-tools@portal:tools::locator=root-workspace-0b6124%40workspace%3A."
@@ -8915,6 +8929,13 @@ __metadata:
   languageName: node
   linkType: hard
 
+"make-plural@npm:^8.0.0":
+  version: 8.1.0
+  resolution: "make-plural@npm:8.1.0"
+  checksum: 10/a870206e57f336a9e4325855c3ef8e5d479df44b47382708547b390f7125f8c9c8610f597ac8b51d4a68c0b1bf763b4fc5611671ccc606eeae663c244d324ed0
+  languageName: node
+  linkType: hard
+
 "map-age-cleaner@npm:^0.1.1":
   version: 0.1.3
   resolution: "map-age-cleaner@npm:0.1.3"
@@ -11212,7 +11233,7 @@ __metadata:
   resolution: "root-workspace-0b6124@workspace:."
   dependencies:
     "@nativescript-community/https": "npm:^4.1.32"
-    "@nativescript-community/l": "npm:^4.3.11"
+    "@nativescript-community/l": "npm:^4.3.12"
     "@nativescript-community/plugin-seed-tools": "portal:tools"
     "@nativescript-community/ui-share-file": "npm:1.3.3"
     make-error: "npm:1.3.6"

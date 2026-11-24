@@ -137,7 +137,7 @@ export default abstract class BaseWorkerHandler<T extends BaseWorker> extends Ob
             });
         } else {
             // DEV_LOG && console.info('Sync', 'postMessage', 'test');
-            const keys = Object.keys(nativeData);
+            const keys = nativeData ? Object.keys(nativeData) : [];
             const nativeDataKeysPrefix = Date.now() + '$$$';
             keys.forEach((k) => {
                 setWorkerContextValue(nativeDataKeysPrefix + k, nativeData[k]._native || nativeData[k]);
